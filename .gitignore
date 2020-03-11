@@ -1,0 +1,3 @@
+images/*.img
+images/*.tar.gz
+images/packer_cache
