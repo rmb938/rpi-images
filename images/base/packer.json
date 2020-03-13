@@ -1,8 +1,11 @@
 {
-    "variables": {},
-    "builders": [{
+  "variables": {},
+  "builders": [
+    {
       "type": "arm",
-      "file_urls" : ["https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2020-02-14/2020-02-13-raspbian-buster-lite.zip"],
+      "file_urls": [
+        "https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2020-02-14/2020-02-13-raspbian-buster-lite.zip"
+      ],
       "file_checksum_url": "https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2020-02-14/2020-02-13-raspbian-buster-lite.zip.sha256",
       "file_checksum_type": "sha256",
       "file_target_extension": "zip",
@@ -28,40 +31,43 @@
           "mountpoint": "/"
         }
       ],
-      "image_chroot_env": ["PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"],
+      "image_chroot_env": [
+        "PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"
+      ],
       "qemu_binary_source_path": "/usr/bin/qemu-arm-static",
       "qemu_binary_destination_path": "/usr/bin/qemu-arm-static"
-    }],
-    "provisioners": [
-      {
-        "type": "shell",
-        "inline": [
-          "df -h",
-          "cp -vr /boot /tmp/boot",
-          "umount /boot",
-          "mv -v /tmp/boot /"
-        ]
-      },
-      {
-        "type": "file",
-        "source": "./base/files/",
-        "destination": "/tmp/files"
-      },
-      {
-        "type": "shell",
-        "inline": [
-          "cp /tmp/files/etc/fstab /etc/fstab",
-          "echo 'console=serial0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait' > /boot/cmdline.txt",
-          "rm -rf /tmp/files"
-        ]
-      },
-      {
-        "type": "shell",
-        "inline": [
-          "touch /boot/ssh",
-          "apt-get update",
-          "apt-get upgrade -y"
-        ]
-      }
-    ]
-  }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "df -h",
+        "cp -vr /boot /tmp/boot",
+        "umount /boot",
+        "mv -v /tmp/boot /"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "./base/files/",
+      "destination": "/tmp/files"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "cp /tmp/files/etc/fstab /etc/fstab",
+        "echo 'console=serial0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes rootwait' > /boot/cmdline.txt",
+        "rm -rf /tmp/files"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "touch /boot/ssh",
+        "apt-get update",
+        "apt-get upgrade -y"
+      ]
+    }
+  ]
+}

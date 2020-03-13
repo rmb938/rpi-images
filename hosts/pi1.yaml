@@ -1,0 +1,13 @@
+image: images/kubernetes.img
+hostname: pi1.rmb938.me
+publicKeys:
+  rmb938: ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDGh42fHGzThG+7pA8O6DgSXQYeMHsHMkGVJdZNLvKc43lL2+Ovv8q+fYr2h1TQkHvGb4loRPLfGU6QgF5aJ8gRzwsCyDB58xeakF7otrShhZkLsjws4wKRJuv6svP5zVADSDz4TEEHXNONvoF/KU+PUY4NbS40G6qjlcfSKyp/aHDxtfNY/Q4erh80hYRJjdopA6DHx0UIDR4rSN9mymrVbvoRRnNhHynaUrBPhJ+C7ty7lzg6PhiHr6CK0iCFZHaDobXa9aa7ML1AliXzyB1tOIHU/4mJPXZzvFhmHfM4L+mau32BrxU/W8TwibfenFnaRY1E6ylRdmFDK0U2MdQTDCZDb2F+oGmbcvp8g3BixHL8p7L7yh+D7PuhPsoXKY8W586MZmNlp4MOpPQ8dFd0cCt7X9rc4nmHYtpwRZKyS6+zQRJj9tjAj4/6MzXPrH+AUKdL0pyQkeqUU+32y/LnBskhWjDoq8tg4JsoJtDe2t6XR9KQOWVn/EdNwD+Y9P0=
+network:
+  mac: dc:a6:32:69:1c:11
+  ipAddress: 192.168.23.75
+  netmask: 255.255.255.0
+  gateway: 192.168.23.254
+  nameservers:
+    - 192.168.23.254
+  search:
+    - rmb938.me

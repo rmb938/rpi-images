@@ -1,10 +1,19 @@
 {
-    "variables": {},
-    "builders": [{
+  "variables": {},
+  "builders": [
+    {
       "type": "arm",
-      "file_urls" : ["file:///images/base.tar.gz"],
+      "file_urls": [
+        "file:///images/base.tar.gz"
+      ],
       "file_checksum_type": "none",
-      "file_unarchive_cmd": ["tar", "-xpf", "$ARCHIVE_PATH", "-C", "$MOUNTPOINT"],
+      "file_unarchive_cmd": [
+        "tar",
+        "-xpf",
+        "$ARCHIVE_PATH",
+        "-C",
+        "$MOUNTPOINT"
+      ],
       "file_target_extension": "tar.gz",
       "image_build_method": "new",
       "image_path": "cloud-init.tar.gz",
@@ -20,16 +29,24 @@
           "mountpoint": "/"
         }
       ],
-      "image_chroot_env": ["PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"],
+      "image_chroot_env": [
+        "PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin"
+      ],
       "qemu_binary_source_path": "/usr/bin/qemu-arm-static",
       "qemu_binary_destination_path": "/usr/bin/qemu-arm-static"
-    }],
-    "provisioners": [
-      {
-        "type": "shell",
-        "inline": [
-          "apt-get install -y cloud-init"
-        ]
-      }
-    ]
-  }
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "inline": [
+        "apt-get purge -y raspberrypi-net-mods dhcpcd5",
+        "systemctl disable regenerate_ssh_host_keys.service",
+        "systemctl enable systemd-networkd",
+        "systemctl enable systemd-resolved",
+        "apt-get install -y netplan.io cloud-init",
+        "echo 'system_info:\n  network:\n    renderers: ['netplan']' > /etc/cloud/cloud.cfg.d/01_netplan.cfg"
+      ]
+    }
+  ]
+}
