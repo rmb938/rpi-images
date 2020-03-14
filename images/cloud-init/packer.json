@@ -60,6 +60,7 @@
         "mkdir -p /var/lib/cloud/scripts/per-instance/",
         "cp /tmp/files/var/lib/cloud/scripts/per-instance/01_resolved.sh /var/lib/cloud/scripts/per-instance/01_resolved.sh",
         "chmod +x /var/lib/cloud/scripts/per-instance/01_resolved.sh",
+        "cp /tmp/files/etc/systemd/resolved.conf /etc/systemd/resolved.conf",
         "rm -rf /tmp/files"
       ]
     }
