@@ -1,0 +1,56 @@
+---
+- hosts: all
+  tasks:
+    - name: REMOVE PI USER
+      user:
+        name: pi
+        remove: yes
+        state: absent
+
+    - name: REMOVE NET-MODS AND DHCPCD5
+      apt:
+        name:
+          - raspberrypi-net-mods
+          - dhcpcd5
+        purge: yes
+        state: absent
+
+    - name: DISABLE SSH HOST KEYS SERVICE
+      systemd:
+        name: regenerate_ssh_host_keys
+        enabled: no
+
+    - name: ENABLE SYSTEMD NETWORKD
+      systemd:
+        name: systemd-networkd
+        enabled: yes
+
+    - name: ENABLE SYSTEMD RESOLVED
+      systemd:
+        name: systemd-resolved
+        enabled: yes
+
+    - name: INSTALL CLOUD-INIT
+      apt:
+        name:
+          - netplan.io
+          - cloud-init
+        state: present
+
+    - name: MAKE CLOUD-INIT SCRIPTS PER-INSTANCE DIR
+      file:
+        path: /var/lib/cloud/scripts/per-instance/
+        state: directory
+        mode: "0644"
+
+    - name: COPY CONFIG FILES
+      copy:
+        src: ".{{ item.dest }}"
+        dest: "{{ item.dest }}"
+        owner: root
+        group: root
+        mode: "{{ item.mode }}"
+      with_items:
+        - { dest: '/etc/cloud/cloud.cfg.d/01_netplan.cfg', mode: "0600" }
+        - { dest: '/var/lib/cloud/scripts/per-instance/01_resolved.sh', mode: "0700" }
+        - { dest: '/etc/systemd/resolved.conf', mode: "0600" }

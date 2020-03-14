@@ -1,5 +1,7 @@
 {
-  "variables": {},
+  "variables": {
+    "image_mount_path": "/mnt/packer-chroot/cloud-init"
+  },
   "builders": [
     {
       "type": "arm",
@@ -19,6 +21,7 @@
       "image_path": "cloud-init.tar.gz",
       "image_size": "2G",
       "image_type": "dos",
+      "image_mount_path": "{{ user `image_mount_path` }}",
       "image_partitions": [
         {
           "name": "root",
@@ -38,31 +41,16 @@
   ],
   "provisioners": [
     {
-      "type": "shell",
-      "inline": [
-        "deluser -remove-home pi",
-        "apt-get purge -y raspberrypi-net-mods dhcpcd5",
-        "systemctl disable regenerate_ssh_host_keys.service",
-        "systemctl enable systemd-networkd",
-        "systemctl enable systemd-resolved",
-        "apt-get install -y netplan.io cloud-init"
-      ]
-    },
-    {
-      "type": "file",
-      "source": "./cloud-init/files/",
-      "destination": "/tmp/files"
-    },
-    {
-      "type": "shell",
-      "inline": [
-        "cp /tmp/files/etc/cloud/cloud.cfg.d/01_netplan.cfg /etc/cloud/cloud.cfg.d/01_netplan.cfg",
-        "mkdir -p /var/lib/cloud/scripts/per-instance/",
-        "cp /tmp/files/var/lib/cloud/scripts/per-instance/01_resolved.sh /var/lib/cloud/scripts/per-instance/01_resolved.sh",
-        "chmod +x /var/lib/cloud/scripts/per-instance/01_resolved.sh",
-        "cp /tmp/files/etc/systemd/resolved.conf /etc/systemd/resolved.conf",
-        "rm -rf /tmp/files"
-      ]
+      "type": "ansible",
+      "ansible_env_vars": [
+        "ANSIBLE_RETRY_FILES_ENABLED=0 "
+      ],
+      "extra_arguments": [
+        "-v",
+        "--connection=chroot"
+      ],
+      "inventory_file": "./cloud-init/ansible/hosts",
+      "playbook_file": "./cloud-init/ansible/site.yml"
     }
   ]
 }

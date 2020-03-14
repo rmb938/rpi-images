@@ -7,7 +7,7 @@ RUN git clone https://github.com/mkaczanowski/packer-builder-arm.git && \
 
 FROM debian:buster-slim
 
-RUN apt update && apt install -y wget unzip qemu-user-static gdisk dosfstools
+RUN apt update && apt install -y wget unzip qemu-user-static gdisk dosfstools python3-distutils ansible
 
 ENV PACKER_VERSION=1.4.5
 
