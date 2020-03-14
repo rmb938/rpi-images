@@ -40,12 +40,27 @@
     {
       "type": "shell",
       "inline": [
+        "deluser -remove-home pi",
         "apt-get purge -y raspberrypi-net-mods dhcpcd5",
         "systemctl disable regenerate_ssh_host_keys.service",
         "systemctl enable systemd-networkd",
         "systemctl enable systemd-resolved",
-        "apt-get install -y netplan.io cloud-init",
-        "echo 'system_info:\n  network:\n    renderers: ['netplan']' > /etc/cloud/cloud.cfg.d/01_netplan.cfg"
+        "apt-get install -y netplan.io cloud-init"
+      ]
+    },
+    {
+      "type": "file",
+      "source": "./cloud-init/files/",
+      "destination": "/tmp/files"
+    },
+    {
+      "type": "shell",
+      "inline": [
+        "cp /tmp/files/etc/cloud/cloud.cfg.d/01_netplan.cfg /etc/cloud/cloud.cfg.d/01_netplan.cfg",
+        "mkdir -p /var/lib/cloud/scripts/per-instance/",
+        "cp /tmp/files/var/lib/cloud/scripts/per-instance/01_resolved.sh /var/lib/cloud/scripts/per-instance/01_resolved.sh",
+        "chmod +x /var/lib/cloud/scripts/per-instance/01_resolved.sh",
+        "rm -rf /tmp/files"
       ]
     }
   ]

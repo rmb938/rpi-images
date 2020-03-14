@@ -65,6 +65,7 @@
       "type": "shell",
       "inline": [
         "touch /boot/ssh",
+        "echo 'hdmi_force_hotplug=1' >> /boot/config.txt",
         "apt-get update",
         "apt-get upgrade -y"
       ]
