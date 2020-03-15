@@ -13,6 +13,9 @@ network:
     - rmb938.me
 userData: |-
   #cloud-config
+  ntp:
+    servers:
+      - 192.168.23.254
   write_files:
     - path: /etc/kubernetes/kubeadm.yaml
       content: |-

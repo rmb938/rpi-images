@@ -66,6 +66,7 @@
       "inline": [
         "touch /boot/ssh",
         "echo 'hdmi_force_hotplug=1' >> /boot/config.txt",
+        "ln -fs /usr/share/zoneinfo/UTC /etc/localtime",
         "apt-get update",
         "apt-get upgrade -y"
       ]
