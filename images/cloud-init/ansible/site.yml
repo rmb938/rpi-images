@@ -81,3 +81,4 @@
         mode: "{{ item.mode }}"
       with_items:
         - { dest: '/etc/cloud/cloud.cfg.d/01_netplan.cfg', mode: "0600" }
+        - { dest: '/etc/cloud/cloud.cfg.d/02_apt_sources.cfg', mode: "0600" }

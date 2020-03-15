@@ -29,6 +29,7 @@ type MetaData struct {
 		Nameservers []string `yaml:"nameservers"`
 		Search      []string `yaml:"search"`
 	} `yaml:"network"`
+	UserData string `yaml:"userData"`
 }
 
 func main() {
@@ -219,6 +220,18 @@ func main() {
 	_, err = networkdataFile.Write(data)
 	if err != nil {
 		log.Fatalf("Error writting network data: %v", err)
+	}
+
+	userdataPath := path.Join(cloudInitPrefix, "user_data")
+	log.Printf("Opening %s", userdataPath)
+	userdataFile, err := cloudInitFS.OpenFile(userdataPath, os.O_CREATE|os.O_RDWR)
+	if err != nil {
+		log.Fatalf("Error opening user data: %v", err)
+	}
+	log.Printf("Writing userdata contents: \n%v", metadataConfig.UserData)
+	_, err = userdataFile.Write([]byte(metadataConfig.UserData))
+	if err != nil {
+		log.Fatalf("Error writting user data: %v", err)
 	}
 
 	err = destDisk.File.Close()
