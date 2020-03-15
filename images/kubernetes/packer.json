@@ -1,5 +1,7 @@
 {
-  "variables": {},
+  "variables": {
+    "image_mount_path": "/mnt/packer-chroot/kubernetes"
+  },
   "builders": [
     {
       "type": "arm",
@@ -19,6 +21,7 @@
       "image_path": "kubernetes.img",
       "image_size": "3G",
       "image_type": "dos",
+      "image_mount_path": "{{ user `image_mount_path` }}",
       "image_partitions": [
         {
           "name": "boot",
@@ -46,29 +49,16 @@
   ],
   "provisioners": [
     {
-      "type": "shell",
-      "inline": [
-        "apt-get install -y iptables arptables ebtables",
-        "update-alternatives --set iptables /usr/sbin/iptables-legacy",
-        "update-alternatives --set ip6tables /usr/sbin/ip6tables-legacy",
-        "update-alternatives --set arptables /usr/sbin/arptables-legacy",
-        "update-alternatives --set ebtables /usr/sbin/ebtables-legacy"
-      ]
-    },
-    {
-      "type": "shell",
-      "inline": [
-        "apt-get install -y apt-transport-https ca-certificates curl gnupg2 software-properties-common"
-      ]
-    },
-    {
-      "type": "shell",
-      "inline": [
-        "curl -fsSL https://download.docker.com/linux/raspbian/gpg | apt-key add -",
-        "echo 'deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable' > /etc/apt/sources.list.d/docker.list",
-        "apt-get update",
-        "apt-get install -y --no-install-recommends docker-ce docker-ce-cli containerd.io"
-      ]
+      "type": "ansible",
+      "ansible_env_vars": [
+        "ANSIBLE_RETRY_FILES_ENABLED=0"
+      ],
+      "extra_arguments": [
+        "-v",
+        "--connection=chroot"
+      ],
+      "inventory_file": "./kubernetes/ansible/hosts",
+      "playbook_file": "./kubernetes/ansible/site.yml"
     }
   ]
 }

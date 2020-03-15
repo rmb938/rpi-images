@@ -1,0 +1,49 @@
+---
+- hosts: all
+  tasks:
+    - name: INSTALL LEGACY TABLES
+      apt:
+        name:
+          - iptables
+          - arptables
+          - ebtables
+        state: present
+
+    - name: UPDATE ALTERNATIVES TO LEGACY TABLES
+      alternatives:
+        name: "{{ item.name }}"
+        path: "{{ item.path }}"
+      with_items:
+        - { name: "iptables", path: "/usr/sbin/iptables-legacy"}
+        - { name: "ip6tables", path: "/usr/sbin/ip6tables-legacy"}
+        - { name: "arptables", path: "/usr/sbin/arptables-legacy"}
+        - { name: "ebtables", path: "/usr/sbin/ebtables-legacy"}
+
+    - name: INSTALL DOCKER REQUIREMENTS
+      apt:
+        name:
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg2
+          - software-properties-common
+        state: present
+
+    - name: ADD DOCKER APT REPOSITORY KEY
+      apt_key:
+        url: https://download.docker.com/linux/raspbian/gpg
+        state: present
+
+    - name: ADD DOCKER APT REPOSITORY
+      apt_repository:
+        repo: "deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable"
+        state: present
+
+    - name: INSTALL DOCKER
+      apt:
+        name:
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io
+        install_recommends: no
+        state: present
