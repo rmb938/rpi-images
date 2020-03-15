@@ -1,5 +1,6 @@
 ---
 - hosts: all
+  name: CLOUD INIT
   tasks:
     - name: REMOVE PI USER
       user:
@@ -82,3 +83,24 @@
       with_items:
         - { dest: '/etc/cloud/cloud.cfg.d/01_netplan.cfg', mode: "0600" }
         - { dest: '/etc/cloud/cloud.cfg.d/02_apt_sources.cfg', mode: "0600" }
+        - { dest: '/etc/cloud/cloud.cfg.d/03_hosts.cfg', mode: "0600" }
+
+    - name: CONFIGURE SYSTEMD FOR LO
+      copy:
+        dest: /etc/systemd/network/00-lo.link
+        content: |-
+          [Match]
+          OriginalName=lo
+
+          [Link]
+          Name=lo
+
+    - name: CONFIGURE SYSTEMD FOR WLAN0
+      copy:
+        dest: /etc/systemd/network/01-wlan0.link
+        content: |-
+          [Match]
+          Type=wlan
+
+          [Link]
+          Name=wlan0

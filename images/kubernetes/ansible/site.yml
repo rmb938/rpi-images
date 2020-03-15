@@ -1,5 +1,6 @@
 ---
 - hosts: all
+  name: KUBERNETES
   vars:
     k8s_version: 1.17.4
   tasks:
