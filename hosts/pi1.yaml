@@ -24,6 +24,8 @@ userData: |-
         kind: InitConfiguration
         nodeRegistration:
           name: pi1.rmb938.me
+          ignorePreflightErrors:
+            - Swap
         bootstrapTokens:
           - ttl: 1s
         ---
