@@ -43,7 +43,7 @@
     {
       "type": "ansible",
       "ansible_env_vars": [
-        "ANSIBLE_RETRY_FILES_ENABLED=0 "
+        "ANSIBLE_RETRY_FILES_ENABLED=0"
       ],
       "extra_arguments": [
         "-v",

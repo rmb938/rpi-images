@@ -37,11 +37,40 @@
           - cloud-init
         state: present
 
-    - name: MAKE CLOUD-INIT SCRIPTS PER-INSTANCE DIR
+    - name: CREATE /RUN/SYSTEMD
       file:
-        path: /var/lib/cloud/scripts/per-instance/
+        path: /run/systemd
+        owner: root
+        group: root
+        mode: "0755"
         state: directory
+
+    - name: CREATE /RUN/SYSTEMD/RESOLVE
+      file:
+        path: /run/systemd/resolve
+        owner: systemd-resolve
+        group: systemd-resolve
+        mode: "0755"
+        state: directory
+
+    - name: COPY RESOLV TO SYSTEMD RESOLVE
+      copy:
+        remote_src: yes
+        src: /etc/resolv.conf
+        dest: /run/systemd/resolve/resolv.conf
+        owner: systemd-resolve
+        group: systemd-resolve
         mode: "0644"
+
+    - name: SYMLINK RESOLV TO SYSTEMD RESOLVE
+      file:
+        path: /etc/resolv.conf
+        src: /run/systemd/resolve/resolv.conf
+        owner: root
+        group: root
+        mode: "0644"
+        force: yes
+        state: link
 
     - name: COPY CONFIG FILES
       copy:
@@ -52,5 +81,3 @@
         mode: "{{ item.mode }}"
       with_items:
         - { dest: '/etc/cloud/cloud.cfg.d/01_netplan.cfg', mode: "0600" }
-        - { dest: '/var/lib/cloud/scripts/per-instance/01_resolved.sh', mode: "0700" }
-        - { dest: '/etc/systemd/resolved.conf', mode: "0600" }

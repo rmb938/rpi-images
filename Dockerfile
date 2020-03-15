@@ -2,6 +2,7 @@ FROM golang:1.14-buster
 
 RUN git clone https://github.com/mkaczanowski/packer-builder-arm.git && \
     cd packer-builder-arm && \
+    git checkout 0d5ee65f66dc398b90070592374a038933e843a6 && \
     go mod download && \
     go build
 
