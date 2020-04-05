@@ -29,23 +29,32 @@ type MetaData struct {
 		Nameservers []string `yaml:"nameservers"`
 		Search      []string `yaml:"search"`
 	} `yaml:"network"`
-	UserData string `yaml:"userData"`
 }
 
 func main() {
-	var configPath string
+	var hostDirectory string
 	var diskPath string
 
-	flag.StringVar(&configPath, "config", "", "The path to the configuration")
+	flag.StringVar(&hostDirectory, "host", "", "The host directory")
 	flag.StringVar(&diskPath, "disk", "", "The path to the disk to write the image to")
 
 	flag.Parse()
 
-	if len(configPath) == 0 {
-		log.Fatalf("config flag must be given")
+	if len(hostDirectory) == 0 {
+		log.Fatalf("host flag must be given")
 	}
 
-	log.Printf("Opening configuration %s", configPath)
+	hostDirectoryInfo, err := os.Stat(hostDirectory)
+	if err != nil {
+		log.Fatalf("Error checking host directory %s: %v", hostDirectory, err)
+	}
+	if hostDirectoryInfo.Mode().IsDir() == false {
+		log.Fatalf("Given host %s is not a directory", hostDirectory)
+	}
+
+	configPath := path.Join(hostDirectory, "metadata.yaml")
+
+	log.Printf("Opening metadata %s", configPath)
 	configFile, err := os.Open(configPath)
 	if err != nil {
 		log.Fatalf("Error opening configuration %s: %v", configPath, err)
@@ -69,6 +78,18 @@ func main() {
 
 	if len(diskPath) == 0 {
 		log.Fatalf("disk flag must be given")
+	}
+
+	userDataPath := path.Join(hostDirectory, "user_data")
+	log.Printf("Opening user data")
+	userDataFile, err := os.Open(userDataPath)
+	if err != nil {
+		log.Fatalf("Error opening user data %s: %v", userDataPath, err)
+	}
+	defer userDataFile.Close()
+	userDataBytes, err := ioutil.ReadAll(userDataFile)
+	if err != nil {
+		log.Fatalf("Error reading user data %s: %v", userDataPath, err)
 	}
 
 	log.Printf("Opening image %s", metadataConfig.Image)
@@ -228,8 +249,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error opening user data: %v", err)
 	}
-	log.Printf("Writing userdata contents: \n%v", metadataConfig.UserData)
-	_, err = userdataFile.Write([]byte(metadataConfig.UserData))
+	log.Printf("Writing userdata contents: \n%v", string(userDataBytes))
+	_, err = userdataFile.Write(userDataBytes)
 	if err != nil {
 		log.Fatalf("Error writting user data: %v", err)
 	}

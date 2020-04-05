@@ -2,7 +2,7 @@ DOCKER_IMAGE=packer-builder-arm
 DOCKER_CMD=docker run --rm -it --privileged -v /dev:/dev -v $$(pwd)/images:/images -w /images ${DOCKER_IMAGE} build
 
 docker-build:
-	docker build -t ${DOCKER_IMAGE} .
+	docker build -t ${DOCKER_IMAGE} -f packer.dockerfile .
 
 
 build-%:

@@ -3,6 +3,7 @@
   name: KUBERNETES
   vars:
     k8s_version: 1.17.4
+    etcd_version: 3.4.3
   tasks:
     - name: INSTALL PACKAGE REQUIREMENTS
       apt:
@@ -13,6 +14,31 @@
           - gnupg2
           - software-properties-common
         state: present
+
+    - name: DOWNLOAD ETCD
+      unarchive:
+        src: "https://storage.googleapis.com/etcd/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
+        dest: /usr/local/bin
+        extra_opts:
+          - --strip=1
+          - --wildcards
+          - '*/etcdctl'
+        remote_src: yes
+
+    - name: ADD GCLOUD APT REPOSITORY KEY
+      apt_key:
+        url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+        state: present
+
+    - name: ADD GCLOUD APT REPOSITORY
+      apt_repository:
+        repo: "deb [arch=armhf] https://packages.cloud.google.com/apt cloud-sdk main"
+        state: present
+
+    - name: INSTALL GCLOUD SDK
+      apt:
+        name:
+          - google-cloud-sdk
 
     - name: ADD KUBERNETES APT REPOSITORY KEY
       apt_key:
@@ -192,5 +218,20 @@
     - name: SET KUBECONFIG ENVIRONMENT VARIABLE FOR ROOT
       lineinfile:
         path: /root/.bashrc
-        regexp: '^export KUBECONFIG='
         line: 'export KUBECONFIG=/etc/kubernetes/admin.conf'
+
+    - name: CREATE /USR/LOCAL/SHARE/KUBERNETES
+      file:
+        path: /usr/local/share/kubernetes
+        owner: root
+        group: root
+        mode: "0755"
+        state: directory
+
+    - name: COPY KUBEADM SCRIPT
+      copy:
+        src: "./usr/local/share/kubernetes/kubeadm.sh"
+        dest: "/usr/local/share/kubernetes/kubeadm.sh"
+        owner: root
+        group: root
+        mode: "0700"

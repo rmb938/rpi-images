@@ -64,6 +64,12 @@
     {
       "type": "shell",
       "inline": [
+        "echo 'deb http://mirrors.rit.edu/raspbian/raspbian/ buster main contrib non-free rpi' > /etc/apt/sources.list"
+      ]
+    },
+    {
+      "type": "shell",
+      "inline": [
         "touch /boot/ssh",
         "echo 'hdmi_force_hotplug=1' >> /boot/config.txt",
         "ln -fs /usr/share/zoneinfo/UTC /etc/localtime",

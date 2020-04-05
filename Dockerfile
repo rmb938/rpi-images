@@ -1,25 +1,20 @@
-FROM golang:1.14-buster
+FROM golang:1.14-alpine3.11 as builder
 
-RUN git clone https://github.com/mkaczanowski/packer-builder-arm.git && \
-    cd packer-builder-arm && \
-    git checkout 0d5ee65f66dc398b90070592374a038933e843a6 && \
-    go mod download && \
-    go build
+WORKDIR /workspace
+# Copy the Go Modules manifests
+COPY go.mod go.mod
+COPY go.sum go.sum
+# cache deps before building and copying source so that we don't need to re-download as much
+# and so that source changes don't invalidate our downloaded layer
+RUN go mod download
 
-FROM debian:buster-slim
+COPY main.go main.go
 
-RUN apt update && apt install -y wget unzip qemu-user-static gdisk dosfstools python3-distutils ansible
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -ldflags '-extldflags "-static"' -o rpi-image main.go
 
-ENV PACKER_VERSION=1.4.5
+FROM alpine:3.11
 
-RUN wget -q https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_linux_amd64.zip && \
-    wget -q https://releases.hashicorp.com/packer/${PACKER_VERSION}/packer_${PACKER_VERSION}_SHA256SUMS && \
-    sed -i '/.*linux_amd64.zip/!d' packer_${PACKER_VERSION}_SHA256SUMS && \
-    sha256sum -c packer_${PACKER_VERSION}_SHA256SUMS && \
-    unzip packer_${PACKER_VERSION}_linux_amd64.zip -d /bin && \
-    rm -f packer_${PACKER_VERSION}_linux_amd64.zip
+COPY --from=builder /workspace/rpi-image .
 
-COPY entrypoint.sh /entrypoint.sh
-COPY --from=0 /go/packer-builder-arm/packer-builder-arm /root/.packer.d/plugins/
-
-ENTRYPOINT ["/entrypoint.sh"]
+WORKDIR /workspace
+ENTRYPOINT ["/rpi-image"]
