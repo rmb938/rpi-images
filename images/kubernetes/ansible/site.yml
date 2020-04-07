@@ -133,7 +133,7 @@
         - {name: "fs.inotify.max_user_instances", value: 4096}
         - {name: "fs.inotify.max_user_watches", value: 32768}
         # - {name: "kernel.pid_max", value: 500000} - raspbian is 32bit so we only can use the default of 32768
-        - {name: "net.ipv4.ip_local_port_range", value: "1024 65000"}
+        - {name: "net.ipv4.ip_local_port_range", value: "1024 64999"} # use even and odd numbers to prevent "ip_local_port_range: prefer different parity for start/end values"
         - {name: "net.ipv4.tcp_tw_reuse", value: 1}
         - {name: "net.ipv4.tcp_fin_timeout", value: 15}
         - {name: "net.core.somaxconn", value: 4096}
@@ -235,3 +235,11 @@
         owner: root
         group: root
         mode: "0700"
+
+    - name: COPY FLANNEL YAML
+      copy:
+        src: "./usr/local/share/kubernetes/flannel.yaml"
+        dest: "/usr/local/share/kubernetes/flannel.yaml"
+        owner: root
+        group: root
+        mode: "0600"
