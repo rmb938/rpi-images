@@ -1,4 +1,4 @@
-DOCKER_IMAGE=packer-builder-arm
+DOCKER_IMAGE=local/packer-builder-arm
 DOCKER_CMD=docker run --rm -it --privileged -v /dev:/dev -v $$(pwd)/images:/images -w /images ${DOCKER_IMAGE} build
 
 docker-build:
