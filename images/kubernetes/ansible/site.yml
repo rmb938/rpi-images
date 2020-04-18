@@ -15,15 +15,31 @@
           - software-properties-common
         state: present
 
-    - name: DOWNLOAD ETCD
-      unarchive:
-        src: "https://storage.googleapis.com/etcd/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-amd64.tar.gz"
-        dest: /usr/local/bin
-        extra_opts:
-          - --strip=1
-          - --wildcards
-          - '*/etcdctl'
-        remote_src: yes
+    # Do some hacks to get a etcd binary
+    - name: CREATE ETCD CONTAINER
+      docker_container:
+        name: rpi-ansible-etcd
+        image: "k8s.gcr.io/etcd-arm:{{ etcd_version }}"
+        state: present
+      delegate_to: localhost
+
+    - name: COPY ETCDCTL BINARY FROM CONTAINER
+      shell: "docker cp rpi-ansible-etcd:/usr/local/bin/etcdctl /tmp/etcdctl"
+      delegate_to: localhost
+
+    - name: COPY ETCDCTL INTO IMAGE
+      copy:
+        src: "/tmp/etcdctl"
+        dest: "/usr/local/bin/etcdctl"
+        owner: root
+        group: root
+        mode: "0751"
+
+    - name: REMOVE ETCD CONTAINER
+      docker_container:
+        name: rpi-ansible-etcd
+        state: absent
+      delegate_to: localhost
 
     - name: ADD GCLOUD APT REPOSITORY KEY
       apt_key:

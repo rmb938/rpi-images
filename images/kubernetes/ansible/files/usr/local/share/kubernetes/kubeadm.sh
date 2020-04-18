@@ -23,7 +23,8 @@ if [ "${KUBEADM_COMMAND}" == "init" ]; then
     tar -zxvf ${tmp_dir}/backup.tar.gz -C ${tmp_dir}
 
     echo "Restoring Kubernetes Certs"
-    cp -r ${tmp_dir}/pki/ /etc/kubernetes/pki/
+    mkdir /etc/kubernetes/pki/
+    cp -r ${tmp_dir}/certs/* /etc/kubernetes/pki/
 
     echo "Restoring ETCD Backup"
     ETCDCTL_API=3
