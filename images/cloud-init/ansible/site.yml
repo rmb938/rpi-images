@@ -15,6 +15,7 @@
           - dhcpcd5
         purge: yes
         state: absent
+        autoremove: yes
 
     - name: DISABLE SSH HOST KEYS SERVICE
       systemd:

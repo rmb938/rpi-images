@@ -1,5 +1,8 @@
 ---
 - name: "2.2.3"
-  systemd:
-    name: avahi-daemon
-    enabled: no
+  apt:
+    name:
+      - avahi-daemon
+    state: absent
+    purge: yes
+    autoremove: yes

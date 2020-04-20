@@ -72,6 +72,9 @@
       "inline": [
         "touch /boot/ssh",
         "echo 'hdmi_force_hotplug=1' >> /boot/config.txt",
+        "echo 'dtoverlay=disable-wifi' >> /boot/config.txt",
+        "echo 'dtoverlay=disable-wifi' >> /boot/config.txt",
+        "apt-get remove -y --auto-remove --purge pi-bluetooth",
         "ln -fs /usr/share/zoneinfo/UTC /etc/localtime",
         "apt-get update",
         "apt-get upgrade -y"

@@ -1,0 +1,19 @@
+{
+	"data": "ENC[AES256_GCM,data:5PCjouGXKEqu+KtE0cqrtFcOI3uSo+dbn7/Ejgm/ngS2CMNX//MWMngYbLKeqU72ru9TsJt50xLJkao3XaD7XU+d1hd59hHddV9qHfWG3SaGYKBjILR23tKzHToZnVGqan1wd3OacsHPgXjnW1RJONp9ttfZvGTU/C4i3TTM/z+CfCBxdUonHzZgJ1VznUBMsp26hyalPKd67DiqmvJ3wUaQLeBZKyaPFZlRn77lmbanWCvEhT3Ntc8IcBhuF6rQVoXFN+R6QW7JgHLdarPo9xDALYuTADZtikqope0BaV8z2pgSzP2PjQD6OgsVPZHOjKpyPjxCHBYB4Kru9eyFudDXtbv1ptfMAqHbvU0/p7PSrnj2FQ9qCgFpHDE138gTpUPvcD+zU7Ek7//4axl+9MCrBpYRfOe9fVE48zHxoNgd65dGvnL0E8y/4FEJ1i8Xh+iTRfTB239Sn30Ro7X/1SyVWeenqWEiCZNmuX3XSRqCxNasb+G8V3+TieSdxn8IbA4CdB+Z8MC3J8BLjl9yYe8SA7ugBVaL2hyk2YK+6L/vzkj0vesP3fNFdQB8K8uFM6R20KrKB8DB7NJA9agb/QhNpQ1qG9hTVjCIQICPFA0BEUliHJ5gTB9R4rMa41ywI77L0ln4Ry92brgHESMU8HJNamE0U/9v0STekkuVS8rcXg==,iv:374WZQu4HJXp5bZf3Rv3DtMU3SK+9/COtE/9WWwFTiM=,tag:miA7SZxLmNKHUPoFyUSXGg==,type:str]",
+	"sops": {
+		"kms": null,
+		"gcp_kms": [
+			{
+				"resource_id": "projects/rmb-lab/locations/global/keyRings/sops/cryptoKeys/sops-key",
+				"created_at": "2020-04-20T19:38:28Z",
+				"enc": "CiQAmQduFtwE3fuc1QqRnIaZFcAxuRP1VrTc4Xxu/hNFvb1iOOkSSQCJjc/UXC2Dm/mEo31kdscLRkYQzlu8Slg3UjXCKBw7fE6Hxei7iX/jnku270oeVq+O9zNm12HNqSPHCwpoDl8XSNuEAmnK2Vc="
+			}
+		],
+		"azure_kv": null,
+		"lastmodified": "2020-04-20T19:38:29Z",
+		"mac": "ENC[AES256_GCM,data:1Mth034TeujRskVh5jw8ePBEEQRZr6HB0rjVYrAoh77RkXuhY87zhd3qpBEARawUIhA5YoTh5rEbiucBDmEwRlwhjxDt4W0SqLO2P5wnRFby7R28uwqJcbmNCwr37UsPAI7sV3UI06Ke4vAFlKQuzIAbhRoELU3nmxgEvVuIRYU=,iv:yI0DnZdMtiJ1GoVEWiN5ToeEOcEK7u0hxdiEt8B0Vz0=,tag:35PbGbFIhpBaaapxwcyLOQ==,type:str]",
+		"pgp": null,
+		"unencrypted_suffix": "_unencrypted",
+		"version": "3.5.0"
+	}
+}
