@@ -1,0 +1,45 @@
+---
+- name: "3.2.1"
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    reload: no
+  with_items:
+    - {name: "net.ipv4.conf.all.accept_source_route", value: 0}
+    - {name: "net.ipv4.conf.default.accept_source_route", value: 0}
+
+- name: "3.2.2"
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    reload: no
+  with_items:
+    - {name: "net.ipv4.conf.all.accept_redirects", value: 0}
+    - {name: "net.ipv4.conf.default.accept_redirects", value: 0}
+
+- name: "3.2.3"
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    reload: no
+  with_items:
+    - {name: "net.ipv4.conf.all.secure_redirects", value: 0}
+    - {name: "net.ipv4.conf.default.secure_redirects", value: 0}
+
+- name: "3.2.4"
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    reload: no
+  with_items:
+    - {name: "net.ipv4.conf.all.log_martians", value: 1}
+    - {name: "net.ipv4.conf.default.log_martians", value: 1}
+
+- name: "3.2.7"
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    reload: no
+  with_items:
+    - {name: "net.ipv4.conf.all.rp_filter", value: 1}
+    - {name: "net.ipv4.conf.default.rp_filter", value: 1}

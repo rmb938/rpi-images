@@ -1,0 +1,12 @@
+---
+- name: "3.5.1 - 3.5.4"
+  copy:
+    dest: /etc/modprobe.d/disabled-network-ansible.conf
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      install dccp /bin/true
+      install sctp /bin/true
+      install rds /bin/true
+      install tipc /bin/true

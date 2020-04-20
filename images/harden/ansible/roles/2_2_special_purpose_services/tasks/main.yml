@@ -1,0 +1,5 @@
+---
+- name: "2.2.3"
+  systemd:
+    name: avahi-daemon
+    enabled: no

@@ -1,0 +1,18 @@
+---
+- hosts: all
+  name: HARDEN
+  roles:
+    - 1_1_filesystem_configuration
+    - 1_5_additional_process_hardening
+    - 2_2_special_purpose_services
+    - 3_1_network_parameters_host_only
+    - 3_2_network_parameters_host_and_router
+    - 3_3_ipv6
+    - 3_5_uncommon_network_protocols
+    - 5_2_ssh_server_configuration
+
+# TODO: https://github.com/dev-sec/cis-dil-benchmark
+# inspec exec git@github.com:dev-sec/cis-dil-benchmark.git --target ssh://debian@pi1.rmb938.me --sudo --reporter cli html:index.html
+# Current build as of 4/20/20: 1065 examples, 262 failures, 89 pending
+
+# TODO: is there a raspbian CIS benchmark that will be better?

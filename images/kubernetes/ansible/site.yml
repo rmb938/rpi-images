@@ -50,11 +50,7 @@
       apt_repository:
         repo: "deb [arch=armhf] https://packages.cloud.google.com/apt cloud-sdk main"
         state: present
-
-    - name: INSTALL GCLOUD SDK
-      apt:
-        name:
-          - google-cloud-sdk
+        update_cache: no
 
     - name: ADD KUBERNETES APT REPOSITORY KEY
       apt_key:
@@ -65,6 +61,22 @@
       apt_repository:
         repo: "deb [arch=armhf] https://apt.kubernetes.io/ kubernetes-xenial main"
         state: present
+        update_cache: no
+
+    - name: ADD DOCKER APT REPOSITORY KEY
+      apt_key:
+        url: https://download.docker.com/linux/raspbian/gpg
+        state: present
+
+    - name: ADD DOCKER APT REPOSITORY
+      apt_repository:
+        repo: "deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable"
+        state: present
+
+    - name: INSTALL GCLOUD SDK
+      apt:
+        name:
+          - google-cloud-sdk
 
     - name: INSTALL KUBERNETES
       apt:
@@ -174,16 +186,6 @@
       file:
         path: /etc/cni/net.d/
         state: directory
-
-    - name: ADD DOCKER APT REPOSITORY KEY
-      apt_key:
-        url: https://download.docker.com/linux/raspbian/gpg
-        state: present
-
-    - name: ADD DOCKER APT REPOSITORY
-      apt_repository:
-        repo: "deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable"
-        state: present
 
     - name: INSTALL CONTAINERD
       apt:

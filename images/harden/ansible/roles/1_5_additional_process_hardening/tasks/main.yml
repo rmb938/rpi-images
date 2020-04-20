@@ -1,0 +1,9 @@
+---
+- name: "1.5.1"
+  copy:
+    dest: /etc/security/limits.d/10-core-dump-restricted.conf
+    owner: root
+    group: root
+    mode: '0644'
+    content: |
+      *               hard    core            0

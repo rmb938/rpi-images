@@ -1,0 +1,72 @@
+---
+- name: "5.2.2"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^Protocol 2' line='Protocol 2'
+
+- name: "5.2.3"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?LogLevel' line='LogLevel INFO'
+
+- name: "5.2.4"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?X11Forwarding' line='X11Forwarding no'
+
+- name: "5.2.5"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?MaxAuthTries' line='MaxAuthTries 4'
+
+- name: "5.2.6"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?IgnoreRhosts' line='IgnoreRhosts yes'
+
+- name: "5.2.7"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?HostbasedAuthentication' line='HostbasedAuthentication no'
+
+- name: "5.2.8"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?PermitRootLogin' line='PermitRootLogin no'
+
+- name: "5.2.9"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?PermitEmptyPasswords' line='PermitEmptyPasswords no'
+
+- name: "5.2.10"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?PermitUserEnvironment' line='PermitUserEnvironment no'
+
+- name: "5.2.11"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?Ciphers' line='Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr'
+
+- name: "5.2.12"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?MACs' line='MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com'
+
+- name: "5.2.13"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?ClientAliveInterval' line='ClientAliveInterval 300'
+- name: "5.2.13"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?ClientAliveCountMax' line='ClientAliveCountMax 0'
+
+- name: "5.2.14"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?LoginGraceTime' line='LoginGraceTime 1m'
+
+- name: "5.2.15"
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?AllowUsers' line='AllowUsers debian'
+
+
+# https://gist.github.com/cmavr8/eb4a9e596bd0e3e85f97d907de288c54
+
+- lineinfile: dest=/etc/ssh/sshd_config regexp='^HostKey /etc/ssh/ssh_host_ed25519_key' line='HostKey /etc/ssh/ssh_host_ed25519_key'
+- lineinfile: dest=/etc/ssh/sshd_config regexp='^HostKey /etc/ssh/ssh_host_rsa_key' line='HostKey /etc/ssh/ssh_host_rsa_key'
+
+- name: Disable bad ones
+  lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^HostKey /etc/ssh/ssh_host_ecdsa_key'
+    state: absent
+- lineinfile:
+    dest: /etc/ssh/sshd_config
+    regexp: '^HostKey /etc/ssh/ssh_host_dsa_key'
+    state: absent
+
+- lineinfile: dest=/etc/ssh/sshd_config regexp='^#?KexAlgorithms' line='KexAlgorithms curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256'
+
+- name: Password based logins are disabled - only public key based logins are allowed.
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?AuthenticationMethods' line='AuthenticationMethods publickey'
+- lineinfile: dest=/etc/ssh/sshd_config regexp='^#?PasswordAuthentication' line='PasswordAuthentication no'
+- lineinfile: dest=/etc/ssh/sshd_config regexp='^#?ChallengeResponseAuthentication' line='ChallengeResponseAuthentication no'
+- lineinfile: dest=/etc/ssh/sshd_config regexp='^#?PubkeyAuthentication' line='PubkeyAuthentication yes'
+
+# Log sftp level file access (read/write/etc.) that would not be easily logged otherwise.
+- lineinfile: dest=/etc/ssh/sshd_config regexp='^#?Subsystem[ \t]+sftp' line='Subsystem sftp  /usr/lib/openssh/sftp-server -f AUTHPRIV -l INFO'
+

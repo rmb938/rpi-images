@@ -1,12 +1,12 @@
 {
   "variables": {
-    "image_mount_path": "/mnt/packer-chroot/kubernetes"
+    "image_mount_path": "/mnt/packer-chroot/harden"
   },
   "builders": [
     {
       "type": "arm",
       "file_urls": [
-        "file:///images/harden.tar.gz"
+        "file:///images/cloud-init.tar.gz"
       ],
       "file_checksum_type": "none",
       "file_unarchive_cmd": [
@@ -18,19 +18,11 @@
       ],
       "file_target_extension": "tar.gz",
       "image_build_method": "new",
-      "image_path": "kubernetes.img",
-      "image_size": "3G",
+      "image_path": "harden.tar.gz",
+      "image_size": "2G",
       "image_type": "dos",
       "image_mount_path": "{{ user `image_mount_path` }}",
       "image_partitions": [
-        {
-          "name": "boot",
-          "type": "c",
-          "start_sector": "8192",
-          "filesystem": "vfat",
-          "size": "256M",
-          "mountpoint": "/boot"
-        },
         {
           "name": "root",
           "type": "83",
@@ -57,8 +49,8 @@
         "-v",
         "--connection=chroot"
       ],
-      "inventory_file": "./kubernetes/ansible/hosts",
-      "playbook_file": "./kubernetes/ansible/site.yml"
+      "inventory_file": "./harden/ansible/hosts",
+      "playbook_file": "./harden/ansible/site.yml"
     }
   ]
 }

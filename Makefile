@@ -8,7 +8,7 @@ docker-build:
 build-%:
 	 ${DOCKER_CMD} $*/packer.json
 
-build: docker-build build-base build-cloud-init
+build: docker-build build-base build-cloud-init build-harden
 
 clean:
 	sudo rm -rf images/*.img
