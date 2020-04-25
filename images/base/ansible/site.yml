@@ -1,0 +1,91 @@
+---
+- hosts: all
+  name: BASE
+  tasks:
+    - name: REPLACE /BOOT/FIRMWARE/CMDLINE.TXT
+      copy:
+        src: ./boot/firmware/cmdline.txt
+        dest: /boot/firmware/cmdline.txt
+
+    - name: REPLACE /ETC/FSTAB
+      copy:
+        src: ./etc/fstab
+        dest: /etc/fstab
+
+    - name: SET /BOOT/firmware/USERCFG.TXT FLAGS
+      lineinfile:
+        path: /boot/firmware/usercfg.txt
+        line: "{{ item }}"
+      with_items:
+        - "hdmi_force_hotplug=1"
+        - "dtoverlay=disable-bt"
+        - "dtoverlay=disable-wifi"
+
+    - name: CREATE /RUN/SYSTEMD
+      file:
+        path: /run/systemd
+        owner: root
+        group: root
+        mode: "0755"
+        state: directory
+
+    - name: CREATE /RUN/SYSTEMD/RESOLVE
+      file:
+        path: /run/systemd/resolve
+        owner: systemd-resolve
+        group: systemd-resolve
+        mode: "0755"
+        state: directory
+
+    - name: COPY RESOLV TO SYSTEMD RESOLVE
+      copy:
+        src: /etc/resolv.conf
+        dest: /run/systemd/resolve/resolv.conf
+        owner: systemd-resolve
+        group: systemd-resolve
+        mode: "0644"
+
+    - name: SYMLINK RESOLV TO SYSTEMD RESOLVE
+      file:
+        path: /etc/resolv.conf
+        src: /run/systemd/resolve/resolv.conf
+        owner: root
+        group: root
+        mode: "0644"
+        force: yes
+        state: link
+
+    - name: DISABLE UBUNTU MOTD-NEWS
+      lineinfile:
+        dest: /etc/default/motd-news
+        state: present
+        regexp: '^ENABLED='
+        line: 'ENABLED=0'
+
+    - name: REMOVE SNAPD
+      apt:
+        name:
+          - snapd
+        state: absent
+        purge: yes
+        autoremove: yes
+
+    - name: UPDATE ALL PACKAGES
+      apt:
+        update_cache: yes
+        upgrade: yes
+
+    - name: INSTALL UTILITIES
+      apt:
+        name:
+          - net-tools
+          - vim
+          - unzip
+          - tar
+          - jq
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - gnupg2
+          - software-properties-common
+        state: present

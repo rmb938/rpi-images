@@ -7,3 +7,11 @@
     mode: '0644'
     content: |
       *               hard    core            0
+
+- name: "1.5.1"
+  sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    reload: no
+  with_items:
+    - {name: "fs.suid_dumpable", value: 0}

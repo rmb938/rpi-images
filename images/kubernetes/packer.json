@@ -19,22 +19,22 @@
       "file_target_extension": "tar.gz",
       "image_build_method": "new",
       "image_path": "kubernetes.img",
-      "image_size": "3G",
+      "image_size": "3.5G",
       "image_type": "dos",
       "image_mount_path": "{{ user `image_mount_path` }}",
       "image_partitions": [
         {
-          "name": "boot",
+          "name": "boot/firmware",
           "type": "c",
-          "start_sector": "8192",
+          "start_sector": "2048",
           "filesystem": "vfat",
           "size": "256M",
-          "mountpoint": "/boot"
+          "mountpoint": "/boot/firmware"
         },
         {
           "name": "root",
           "type": "83",
-          "start_sector": "532480",
+          "start_sector": "526336",
           "filesystem": "ext4",
           "size": "0",
           "mountpoint": "/"

@@ -19,14 +19,14 @@
       "file_target_extension": "tar.gz",
       "image_build_method": "new",
       "image_path": "cloud-init.tar.gz",
-      "image_size": "2G",
+      "image_size": "3.3G",
       "image_type": "dos",
       "image_mount_path": "{{ user `image_mount_path` }}",
       "image_partitions": [
         {
           "name": "root",
           "type": "83",
-          "start_sector": "532480",
+          "start_sector": "526336",
           "filesystem": "ext4",
           "size": "0",
           "mountpoint": "/"

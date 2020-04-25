@@ -1,31 +1,39 @@
 {
-  "variables": {},
+  "variables": {
+    "image_mount_path": "/mnt/packer-chroot/base"
+  },
   "builders": [
     {
       "type": "arm",
       "file_urls": [
-        "https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2020-02-14/2020-02-13-raspbian-buster-lite.zip"
+        "http://cdimage.ubuntu.com/releases/20.04/release/ubuntu-20.04-preinstalled-server-arm64+raspi.img.xz"
       ],
-      "file_checksum_url": "https://downloads.raspberrypi.org/raspbian_lite/images/raspbian_lite-2020-02-14/2020-02-13-raspbian-buster-lite.zip.sha256",
+      "file_checksum": "48167067d65c5192ffe041c9cc4958cb7fcdfd74fa15e1937a47430ed7b9de99",
+      "file_unarchive_cmd": [
+        "xz",
+        "-d",
+        "$ARCHIVE_PATH"
+      ],
       "file_checksum_type": "sha256",
-      "file_target_extension": "zip",
+      "file_target_extension": "xz",
       "image_build_method": "reuse",
       "image_path": "base.tar.gz",
-      "image_size": "2G",
+      "image_size": "3.3G",
       "image_type": "dos",
+      "image_mount_path": "{{ user `image_mount_path` }}",
       "image_partitions": [
         {
-          "name": "boot",
+          "name": "boot/firmware",
           "type": "c",
-          "start_sector": "8192",
+          "start_sector": "2048",
           "filesystem": "vfat",
           "size": "256M",
-          "mountpoint": "/boot"
+          "mountpoint": "/boot/firmware"
         },
         {
           "name": "root",
           "type": "83",
-          "start_sector": "532480",
+          "start_sector": "526336",
           "filesystem": "ext4",
           "size": "0",
           "mountpoint": "/"
@@ -43,42 +51,28 @@
       "type": "shell",
       "inline": [
         "df -h",
-        "cp -vr /boot /tmp/boot",
-        "umount /boot",
-        "mv -v /tmp/boot /"
+        "ls -la /boot/firmware",
+        "mkdir -p /tmp/boot",
+        "cp -vr /boot/firmware /tmp/boot/",
+        "umount /boot/firmware",
+        "df -h",
+        "rm -rf /boot/firmware/*",
+        "mv -v /tmp/boot/firmware /boot/",
+        "ls -la /boot/firmware",
+        "rm -rf /tmp/boot"
       ]
     },
     {
-      "type": "file",
-      "source": "./base/files/",
-      "destination": "/tmp/files"
-    },
-    {
-      "type": "shell",
-      "inline": [
-        "cp /tmp/files/etc/fstab /etc/fstab",
-        "echo 'console=serial0,115200 console=tty1 root=/dev/mmcblk0p2 rootfstype=ext4 elevator=deadline fsck.repair=yes cgroup_enable=cpuset cgroup_memory=1 cgroup_enable=memory rootwait' > /boot/cmdline.txt",
-        "rm -rf /tmp/files"
-      ]
-    },
-    {
-      "type": "shell",
-      "inline": [
-        "echo 'deb http://mirrors.rit.edu/raspbian/raspbian/ buster main contrib non-free rpi' > /etc/apt/sources.list"
-      ]
-    },
-    {
-      "type": "shell",
-      "inline": [
-        "touch /boot/ssh",
-        "echo 'hdmi_force_hotplug=1' >> /boot/config.txt",
-        "echo 'dtoverlay=disable-bt' >> /boot/config.txt",
-        "echo 'dtoverlay=disable-wifi' >> /boot/config.txt",
-        "apt-get remove -y --auto-remove --purge pi-bluetooth",
-        "ln -fs /usr/share/zoneinfo/UTC /etc/localtime",
-        "apt-get update",
-        "apt-get upgrade -y"
-      ]
+      "type": "ansible",
+      "ansible_env_vars": [
+        "ANSIBLE_RETRY_FILES_ENABLED=0"
+      ],
+      "extra_arguments": [
+        "-v",
+        "--connection=chroot"
+      ],
+      "inventory_file": "./base/ansible/hosts",
+      "playbook_file": "./base/ansible/site.yml"
     }
   ]
 }

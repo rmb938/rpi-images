@@ -2,77 +2,10 @@
 - hosts: all
   name: CLOUD INIT
   tasks:
-    - name: REMOVE PI USER
-      user:
-        name: pi
-        remove: yes
+    - name: REMOVE FLAKE CLOUD CONFIG
+      file:
         state: absent
-
-    - name: REMOVE NET-MODS AND DHCPCD5
-      apt:
-        name:
-          - raspberrypi-net-mods
-          - dhcpcd5
-        purge: yes
-        state: absent
-        autoremove: yes
-
-    - name: DISABLE SSH HOST KEYS SERVICE
-      systemd:
-        name: regenerate_ssh_host_keys
-        enabled: no
-
-    - name: ENABLE SYSTEMD NETWORKD
-      systemd:
-        name: systemd-networkd
-        enabled: yes
-
-    - name: ENABLE SYSTEMD RESOLVED
-      systemd:
-        name: systemd-resolved
-        enabled: yes
-
-    - name: INSTALL CLOUD-INIT
-      apt:
-        name:
-          - netplan.io
-          - cloud-init
-        state: present
-
-    - name: CREATE /RUN/SYSTEMD
-      file:
-        path: /run/systemd
-        owner: root
-        group: root
-        mode: "0755"
-        state: directory
-
-    - name: CREATE /RUN/SYSTEMD/RESOLVE
-      file:
-        path: /run/systemd/resolve
-        owner: systemd-resolve
-        group: systemd-resolve
-        mode: "0755"
-        state: directory
-
-    - name: COPY RESOLV TO SYSTEMD RESOLVE
-      copy:
-        remote_src: yes
-        src: /etc/resolv.conf
-        dest: /run/systemd/resolve/resolv.conf
-        owner: systemd-resolve
-        group: systemd-resolve
-        mode: "0644"
-
-    - name: SYMLINK RESOLV TO SYSTEMD RESOLVE
-      file:
-        path: /etc/resolv.conf
-        src: /run/systemd/resolve/resolv.conf
-        owner: root
-        group: root
-        mode: "0644"
-        force: yes
-        state: link
+        path: /etc/cloud/cloud.cfg.d/99-fake_cloud.cfg
 
     - name: COPY CONFIG FILES
       copy:
@@ -83,25 +16,4 @@
         mode: "{{ item.mode }}"
       with_items:
         - { dest: '/etc/cloud/cloud.cfg.d/01_netplan.cfg', mode: "0600" }
-        - { dest: '/etc/cloud/cloud.cfg.d/02_apt_sources.cfg', mode: "0600" }
-        - { dest: '/etc/cloud/cloud.cfg.d/03_hosts.cfg', mode: "0600" }
-
-    - name: CONFIGURE SYSTEMD FOR LO
-      copy:
-        dest: /etc/systemd/network/00-lo.link
-        content: |-
-          [Match]
-          OriginalName=lo
-
-          [Link]
-          Name=lo
-
-    - name: CONFIGURE SYSTEMD FOR WLAN0
-      copy:
-        dest: /etc/systemd/network/01-wlan0.link
-        content: |-
-          [Match]
-          Type=wlan
-
-          [Link]
-          Name=wlan0
+        - { dest: '/etc/cloud/cloud.cfg.d/02_hosts.cfg', mode: "0600" }

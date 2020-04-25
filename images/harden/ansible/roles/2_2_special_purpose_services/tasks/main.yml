@@ -6,3 +6,9 @@
     state: absent
     purge: yes
     autoremove: yes
+
+- name: "2.2.16"
+  systemd:
+    name: rsync
+    enabled: no
+    masked: yes

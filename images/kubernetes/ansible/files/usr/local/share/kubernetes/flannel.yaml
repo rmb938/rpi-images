@@ -133,7 +133,7 @@ spec:
 apiVersion: apps/v1
 kind: DaemonSet
 metadata:
-  name: kube-flannel-ds-arm
+  name: kube-flannel-ds-arm64
   namespace: kube-system
   labels:
     tier: node
@@ -160,7 +160,7 @@ spec:
                   - key: beta.kubernetes.io/arch
                     operator: In
                     values:
-                      - arm
+                      - arm64
       hostNetwork: true
       tolerations:
         - operator: Exists
@@ -168,7 +168,7 @@ spec:
       serviceAccountName: flannel
       initContainers:
         - name: install-cni
-          image: quay.io/coreos/flannel:v0.12.0-arm
+          image: quay.io/coreos/flannel:v0.12.0-arm64
           command:
             - cp
           args:

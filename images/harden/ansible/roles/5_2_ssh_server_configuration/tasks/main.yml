@@ -41,7 +41,7 @@
   lineinfile: dest=/etc/ssh/sshd_config regexp='^#?LoginGraceTime' line='LoginGraceTime 1m'
 
 - name: "5.2.15"
-  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?AllowUsers' line='AllowUsers debian'
+  lineinfile: dest=/etc/ssh/sshd_config regexp='^#?AllowUsers' line='AllowUsers ubuntu'
 
 
 # https://gist.github.com/cmavr8/eb4a9e596bd0e3e85f97d907de288c54

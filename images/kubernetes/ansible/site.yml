@@ -8,38 +8,22 @@
     - name: INSTALL PACKAGE REQUIREMENTS
       apt:
         name:
-          - apt-transport-https
-          - ca-certificates
-          - curl
-          - gnupg2
-          - software-properties-common
+          - btrfs-progs
+          - libseccomp2
+          - util-linux
+          - socat
+          - conntrack
         state: present
 
-    # Do some hacks to get a etcd binary
-    - name: CREATE ETCD CONTAINER
-      docker_container:
-        name: rpi-ansible-etcd
-        image: "k8s.gcr.io/etcd-arm:{{ etcd_version }}"
-        state: present
-      delegate_to: localhost
-
-    - name: COPY ETCDCTL BINARY FROM CONTAINER
-      shell: "docker cp rpi-ansible-etcd:/usr/local/bin/etcdctl /tmp/etcdctl"
-      delegate_to: localhost
-
-    - name: COPY ETCDCTL INTO IMAGE
-      copy:
-        src: "/tmp/etcdctl"
-        dest: "/usr/local/bin/etcdctl"
-        owner: root
-        group: root
-        mode: "0751"
-
-    - name: REMOVE ETCD CONTAINER
-      docker_container:
-        name: rpi-ansible-etcd
-        state: absent
-      delegate_to: localhost
+    - name: DOWNLOAD ETCD
+      unarchive:
+        src: "https://storage.googleapis.com/etcd/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-arm64.tar.gz"
+        dest: /usr/local/bin
+        extra_opts:
+          - --strip=1
+          - --wildcards
+          - '*/etcdctl'
+        remote_src: yes
 
     - name: ADD GCLOUD APT REPOSITORY KEY
       apt_key:
@@ -48,7 +32,7 @@
 
     - name: ADD GCLOUD APT REPOSITORY
       apt_repository:
-        repo: "deb [arch=armhf] https://packages.cloud.google.com/apt cloud-sdk main"
+        repo: "deb [arch=arm64] https://packages.cloud.google.com/apt cloud-sdk main"
         state: present
         update_cache: no
 
@@ -59,7 +43,7 @@
 
     - name: ADD KUBERNETES APT REPOSITORY
       apt_repository:
-        repo: "deb [arch=armhf] https://apt.kubernetes.io/ kubernetes-xenial main"
+        repo: "deb [arch=arm64] https://apt.kubernetes.io/ kubernetes-xenial main"
         state: present
         update_cache: no
 
@@ -70,7 +54,7 @@
 
     - name: ADD DOCKER APT REPOSITORY
       apt_repository:
-        repo: "deb [arch=armhf] https://download.docker.com/linux/raspbian buster stable"
+        repo: "deb [arch=arm64] https://download.docker.com/linux/ubuntu xenial stable"
         state: present
 
     - name: INSTALL GCLOUD SDK
@@ -94,20 +78,6 @@
         - kubelet
         - kubeadm
         - kubectl
-
-    - name: INSTALL REQUIRED PACKAGES
-      apt:
-        name:
-          - vim
-          - unzip
-          - tar
-          - btrfs-progs
-          - libseccomp2
-          - util-linux
-          - socat
-          - conntrack
-          - jq
-        state: present
 
     - name: INSTALL LEGACY TABLES
       apt:
@@ -160,7 +130,7 @@
       with_items:
         - {name: "fs.inotify.max_user_instances", value: 4096}
         - {name: "fs.inotify.max_user_watches", value: 32768}
-        # - {name: "kernel.pid_max", value: 500000} - raspbian is 32bit so we only can use the default of 32768
+        - {name: "kernel.pid_max", value: 500000} # - raspbian is 32bit so we only can use the default of 32768
         - {name: "net.ipv4.ip_local_port_range", value: "1024 64999"} # use even and odd numbers to prevent "ip_local_port_range: prefer different parity for start/end values"
         - {name: "net.ipv4.tcp_tw_reuse", value: 1}
         - {name: "net.ipv4.tcp_fin_timeout", value: 15}
@@ -221,7 +191,7 @@
         dest: /etc/default/kubelet
         content: |-
           ### This file is managed by Ansible
-          KUBELET_EXTRA_ARGS="--fail-swap-on=false --cpu-cfs-quota=false --cgroup-driver=systemd"
+          KUBELET_EXTRA_ARGS="--cgroup-driver=systemd"
 
     - name: ENABLE CONTAINERD
       systemd:
