@@ -224,10 +224,10 @@
         group: root
         mode: "0700"
 
-    - name: COPY FLANNEL YAML
+    - name: COPY KUBE ROUTER YAML
       copy:
-        src: "./usr/local/share/kubernetes/flannel.yaml"
-        dest: "/usr/local/share/kubernetes/flannel.yaml"
+        src: "./usr/local/share/kubernetes/kube-router.yaml"
+        dest: "/usr/local/share/kubernetes/kube-router.yaml"
         owner: root
         group: root
         mode: "0600"

@@ -6,7 +6,7 @@ docker-build:
 
 
 build-%:
-	 ${DOCKER_CMD} $*/packer.json -extra-system-packages=gdisk
+	 ${DOCKER_CMD} $*/packer.json
 
 build: docker-build build-base build-cloud-init build-harden
 

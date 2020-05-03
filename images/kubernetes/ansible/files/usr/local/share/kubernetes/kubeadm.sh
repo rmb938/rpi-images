@@ -54,6 +54,9 @@ echo "Running kubeadm"
 kubeadm ${KUBEADM_COMMAND} ${kubeadm_flags} --config /etc/kubernetes/kubeadm.yaml
 
 if [ "${KUBEADM_COMMAND}" == "init" ]; then
-  echo "Applying Flannel"
-  kubectl apply -f /usr/local/share/kubernetes/flannel.yaml
+  echo "Removing Kube Proxy"
+  kubectl delete daemonset -n kube-system kube-proxy
+
+  echo "Applying Kube Router"
+  kubectl apply -f /usr/local/share/kubernetes/kube-router.yaml
 fi
