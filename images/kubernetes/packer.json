@@ -19,7 +19,7 @@
       "file_target_extension": "tar.gz",
       "image_build_method": "new",
       "image_path": "kubernetes.img",
-      "image_size": "3.5G",
+      "image_size": "4.5G",
       "image_type": "dos",
       "image_mount_path": "{{ user `image_mount_path` }}",
       "image_partitions": [

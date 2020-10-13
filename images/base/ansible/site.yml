@@ -89,3 +89,30 @@
           - gnupg2
           - software-properties-common
         state: present
+
+    # USB Boot https://www.raspberrypi.org/forums/viewtopic.php?t=278791
+    - name: SET USB BOOT FLAGS
+      lineinfile:
+        path: /boot/firmware/usercfg.txt
+        line: "{{ item }}"
+      with_items:
+        - "max_framebuffers=2"
+        - "dtoverlay=vc4-fkms-v3d"
+        - "boot_delay"
+        - "kernel=vmlinux"
+        - "initramfs initrd.img followkernel"
+
+    - name: "DECOMPRESS VMLINUZ"
+      shell: "zcat /boot/firmware/vmlinuz > /boot/firmware/vmlinux"
+
+    - name: PLACE AUTO DECOMPRESS KERNEL
+      copy:
+        src: ./boot/firmware/auto_decompress_kernel.sh
+        dest: /boot/firmware/auto_decompress_kernel.sh
+
+    - name: PLACE 999_decompress_rip_kernel
+      copy:
+        dest: /etc/apt/apt.conf.d/999_decompress_rip_kernel
+        content: |-
+          DPkg::Post-Invoke {"/bin/bash /boot/firmware/auto_decompress_kernel.sh"; };
+        mode: 0755
