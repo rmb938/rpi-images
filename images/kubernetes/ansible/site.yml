@@ -208,6 +208,14 @@
         path: /root/.bashrc
         line: 'export KUBECONFIG=/etc/kubernetes/admin.conf'
 
+    - name: PLACE KUBEADM SYSTEMD UNIT
+      copy:
+        src: "./usr/lib/systemd/system/kubeadm.service"
+        dest: "/usr/lib/systemd/system/kubeadm.service"
+        owner: root
+        group: root
+        mode: "0644"
+
     - name: CREATE /USR/LOCAL/SHARE/KUBERNETES
       file:
         path: /usr/local/share/kubernetes

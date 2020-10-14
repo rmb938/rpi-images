@@ -1,0 +1,11 @@
+[Unit]
+Description=Run Kubeadm to init or join a kubernetes cluster
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/default/kubeadm
+ExecStart=/usr/local/share/kubernetes/kubeadm.sh
+RemainAfterExit=true
+
+[Install]
+WantedBy=multi-user.target

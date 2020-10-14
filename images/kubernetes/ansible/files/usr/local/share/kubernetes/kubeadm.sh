@@ -55,8 +55,8 @@ kubeadm ${KUBEADM_COMMAND} ${kubeadm_flags} --config /etc/kubernetes/kubeadm.yam
 
 if [ "${KUBEADM_COMMAND}" == "init" ]; then
   echo "Removing Kube Proxy"
-  kubectl delete daemonset -n kube-system kube-proxy
+  kubectl --kubeconfig /etc/kubernetes/admin.conf delete daemonset -n kube-system kube-proxy
 
   echo "Applying Kube Router"
-  kubectl apply -f /usr/local/share/kubernetes/kube-router.yaml
+  kubectl --kubeconfig /etc/kubernetes/admin.conf apply -f /usr/local/share/kubernetes/kube-router.yaml
 fi
