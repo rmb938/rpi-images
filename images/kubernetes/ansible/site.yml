@@ -13,6 +13,7 @@
           - util-linux
           - socat
           - conntrack
+          - nfs-common
         state: present
 
     - name: DOWNLOAD ETCD
