@@ -7,12 +7,11 @@
     - 2_2_special_purpose_services
     - 3_1_network_parameters_host_only
     - 3_2_network_parameters_host_and_router
-    - 3_3_ipv6
-    - 3_5_uncommon_network_protocols
+    - 3_4_uncommon_network_protocols
     - 5_2_ssh_server_configuration
 
 # TODO: https://github.com/dev-sec/cis-dil-benchmark
 # inspec exec git@github.com:dev-sec/cis-dil-benchmark.git --target ssh://ubuntu@pi1.rmb938.me --sudo --reporter cli html:index.html
-# Current build as of 4/25/20: 1111 examples, 268 failures, 58 pending
+# Current build as of 7/26/22: 1273 examples, 485 failures, 32 pending
 
 # TODO: is there a raspberry pi arm ubuntu CIS benchmark that will be better?

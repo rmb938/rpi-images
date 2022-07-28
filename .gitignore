@@ -2,3 +2,4 @@ images/*.img
 images/*.tar.gz
 images/packer_cache
 hosts/*/user_data
+bin/*

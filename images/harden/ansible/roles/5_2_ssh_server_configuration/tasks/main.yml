@@ -48,6 +48,7 @@
 
 - lineinfile: dest=/etc/ssh/sshd_config regexp='^HostKey /etc/ssh/ssh_host_ed25519_key' line='HostKey /etc/ssh/ssh_host_ed25519_key'
 - lineinfile: dest=/etc/ssh/sshd_config regexp='^HostKey /etc/ssh/ssh_host_rsa_key' line='HostKey /etc/ssh/ssh_host_rsa_key'
+- lineinfile: dest=/etc/ssh/sshd_config line='PubkeyAcceptedKeyTypes=+ssh-rsa'
 
 - name: Disable bad ones
   lineinfile:

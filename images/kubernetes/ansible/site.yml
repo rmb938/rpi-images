@@ -2,8 +2,8 @@
 - hosts: all
   name: KUBERNETES
   vars:
-    k8s_version: 1.19.2
-    etcd_version: 3.4.13
+    k8s_version: 1.24.3
+    etcd_version: 3.5.3
   tasks:
     - name: INSTALL PACKAGE REQUIREMENTS
       apt:
@@ -194,15 +194,19 @@
     #          ### This file is managed by Ansible
     #          KUBELET_EXTRA_ARGS="--cgroup-driver=systemd"
 
+    # - name: ENABLE CONTAINERD
+    #   systemd:
+    #     name: containerd
+    #     enabled: yes
     - name: ENABLE CONTAINERD
-      systemd:
-        name: containerd
-        enabled: yes
+      shell: "systemctl enable containerd"
 
+    # - name: ENABLE KUBELET
+    #   systemd:
+    #     name: kubelet
+    #     enabled: yes
     - name: ENABLE KUBELET
-      systemd:
-        name: kubelet
-        enabled: yes
+      shell: "systemctl enable kubelet"
 
     - name: SET KUBECONFIG ENVIRONMENT VARIABLE FOR ROOT
       lineinfile:

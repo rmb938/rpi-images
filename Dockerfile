@@ -1,4 +1,4 @@
-FROM golang:1.14-alpine3.11 as builder
+FROM golang:1.18-alpine3.16 as builder
 
 WORKDIR /workspace
 # Copy the Go Modules manifests
@@ -12,7 +12,7 @@ COPY main.go main.go
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GO111MODULE=on go build -ldflags '-extldflags "-static"' -o rpi-image main.go
 
-FROM alpine:3.11
+FROM alpine:3.16
 
 COPY --from=builder /workspace/rpi-image .
 

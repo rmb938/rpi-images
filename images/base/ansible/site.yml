@@ -7,14 +7,9 @@
         src: ./boot/firmware/cmdline.txt
         dest: /boot/firmware/cmdline.txt
 
-    - name: REPLACE /ETC/FSTAB
-      copy:
-        src: ./etc/fstab
-        dest: /etc/fstab
-
-    - name: SET /BOOT/firmware/USERCFG.TXT FLAGS
+    - name: SET /BOOT/firmware/CONFIG.TXT FLAGS
       lineinfile:
-        path: /boot/firmware/usercfg.txt
+        path: /boot/firmware/config.txt 
         line: "{{ item }}"
       with_items:
         - "hdmi_force_hotplug=1"
@@ -37,23 +32,13 @@
         mode: "0755"
         state: directory
 
-    - name: COPY RESOLV TO SYSTEMD RESOLVE
+    - name: SET SYSTEMD RESOLVE FOR IMAGE BUILDS
       copy:
-        src: /etc/resolv.conf
-        dest: /run/systemd/resolve/resolv.conf
+        dest: /run/systemd/resolve/stub-resolv.conf
+        content: "nameserver 1.1.1.1" # chroots don't have ns
         owner: systemd-resolve
         group: systemd-resolve
         mode: "0644"
-
-    - name: SYMLINK RESOLV TO SYSTEMD RESOLVE
-      file:
-        path: /etc/resolv.conf
-        src: /run/systemd/resolve/resolv.conf
-        owner: root
-        group: root
-        mode: "0644"
-        force: yes
-        state: link
 
     - name: DISABLE UBUNTU MOTD-NEWS
       lineinfile:
@@ -61,6 +46,14 @@
         state: present
         regexp: '^ENABLED='
         line: 'ENABLED=0'
+
+    - name: UPDATE SOURCES
+      copy: 
+        src: ./etc/apt/sources.list
+        dest: /etc/apt/sources.list
+        owner: root
+        group: root
+        mode: "0644"
 
     - name: REMOVE SNAPD
       apt:
@@ -75,6 +68,17 @@
         update_cache: yes
         upgrade: yes
 
+    - name: MODIFY EFI CHECK FROM FLASH KERNEL SO WE CAN FLASH IN ARM CHROOT
+      lineinfile:
+        path: /usr/share/flash-kernel/functions
+        regexp: '^if \[ -d /sys/firmware/efi \]; then'
+        line: 'if false; then'
+
+    - name: FLASH KERNEL
+      shell: "flash-kernel"
+      environment:
+        FK_MACHINE: "Raspberry Pi 4 Model B"
+
     - name: INSTALL UTILITIES
       apt:
         name:
@@ -83,36 +87,24 @@
           - unzip
           - tar
           - jq
-          - apt-transport-https
           - ca-certificates
           - curl
           - gnupg2
           - software-properties-common
         state: present
 
-    # USB Boot https://www.raspberrypi.org/forums/viewtopic.php?t=278791
-    - name: SET USB BOOT FLAGS
-      lineinfile:
-        path: /boot/firmware/usercfg.txt
-        line: "{{ item }}"
-      with_items:
-        - "max_framebuffers=2"
-        - "dtoverlay=vc4-fkms-v3d"
-        - "boot_delay"
-        - "kernel=vmlinux"
-        - "initramfs initrd.img followkernel"
+    - name: ADD TAILSCALE APT REPOSITORY KEY
+      apt_key:
+        url: https://pkgs.tailscale.com/stable/ubuntu/jammy.noarmor.gpg
+        state: present
+    
+    - name: ADD TAILSCALE APT REPOSITORY
+      apt_repository:
+        repo: "deb [arch=arm64] https://pkgs.tailscale.com/stable/ubuntu jammy main"
+        state: present
 
-    - name: "DECOMPRESS VMLINUZ"
-      shell: "zcat /boot/firmware/vmlinuz > /boot/firmware/vmlinux"
-
-    - name: PLACE AUTO DECOMPRESS KERNEL
-      copy:
-        src: ./boot/firmware/auto_decompress_kernel.sh
-        dest: /boot/firmware/auto_decompress_kernel.sh
-
-    - name: PLACE 999_decompress_rip_kernel
-      copy:
-        dest: /etc/apt/apt.conf.d/999_decompress_rip_kernel
-        content: |-
-          DPkg::Post-Invoke {"/bin/bash /boot/firmware/auto_decompress_kernel.sh"; };
-        mode: 0755
+    - name: INSTALL TAILSCALE
+      apt:
+        name:
+          - tailscale
+    
