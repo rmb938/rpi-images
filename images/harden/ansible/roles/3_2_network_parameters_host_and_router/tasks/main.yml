@@ -7,6 +7,9 @@
   with_items:
     - {name: "net.ipv4.conf.all.accept_source_route", value: 0}
     - {name: "net.ipv4.conf.default.accept_source_route", value: 0}
+    - {name: "net.ipv6.conf.all.accept_source_route", value: 0}
+    - {name: "net.ipv6.conf.default.accept_source_route", value: 0}
+
 
 - name: "3.2.2"
   sysctl:
@@ -16,6 +19,8 @@
   with_items:
     - {name: "net.ipv4.conf.all.accept_redirects", value: 0}
     - {name: "net.ipv4.conf.default.accept_redirects", value: 0}
+    - {name: "net.ipv6.conf.all.accept_redirects", value: 0}
+    - {name: "net.ipv6.conf.default.accept_redirects", value: 0}
 
 - name: "3.2.3"
   sysctl:
@@ -43,3 +48,13 @@
   with_items:
     - {name: "net.ipv4.conf.all.rp_filter", value: 1}
     - {name: "net.ipv4.conf.default.rp_filter", value: 1}
+
+# We like ipv6 RA so not setting this
+# - name: "3.2.9"
+#   sysctl:
+#     name: "{{ item.name }}"
+#     value: "{{ item.value }}"
+#     reload: no
+#   with_items:
+#     - {name: "net.ipv6.conf.all.accept_ra", value: 0}
+#     - {name: "net.ipv6.conf.default.accept_ra", value: 0}
