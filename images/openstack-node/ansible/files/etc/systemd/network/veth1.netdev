@@ -1,0 +1,6 @@
+[NetDev]
+Name=veth1
+Kind=veth
+
+[Peer]
+Name=veth1-provider

@@ -10,25 +10,15 @@ import (
 	"path"
 
 	"github.com/diskfs/go-diskfs"
-	"github.com/diskfs/go-diskfs/disk"
-	"github.com/diskfs/go-diskfs/filesystem"
-	"github.com/diskfs/go-diskfs/partition/mbr"
 	"github.com/google/uuid"
+	"github.com/sirupsen/logrus"
 	"gopkg.in/yaml.v2"
 )
 
 type MetaData struct {
-	Image      string            `yaml:"image"`
-	Hostname   string            `yaml:"hostname"`
-	PublicKeys map[string]string `yaml:"publicKeys"`
-	Network    struct {
-		MAC         string   `yaml:"mac"`
-		IPAddress   string   `yaml:"ipAddress"`
-		Netmask     string   `yaml:"netmask"`
-		Gateway     string   `yaml:"gateway"`
-		Nameservers []string `yaml:"nameservers"`
-		Search      []string `yaml:"search"`
-	} `yaml:"network"`
+	Image         string                 `yaml:"image"`
+	Hostname      string                 `yaml:"hostname"`
+	NetworkConfig map[string]interface{} `yaml:"network_config"`
 }
 
 func main() {
@@ -39,6 +29,8 @@ func main() {
 	flag.StringVar(&diskPath, "disk", "", "The path to the disk to write the image to")
 
 	flag.Parse()
+
+	logrus.SetLevel(logrus.DebugLevel)
 
 	if len(hostDirectory) == 0 {
 		log.Fatalf("host flag must be given")
@@ -130,67 +122,24 @@ func main() {
 	}
 
 	log.Printf("Found partition table %s", rawTable.Type())
-	cloudInitPartitionNumber := -1
 
 	if rawTable.Type() != "mbr" {
 		log.Fatalf("GPT partition tables are not supported")
 	}
 
-	table := rawTable.(*mbr.Table)
-	cloudInitSize := 64 * 1024 * 1024 // 64 MB
-	cloudInitSectors := uint32(cloudInitSize / table.LogicalSectorSize)
-	// we want to create it at the end of the disk
-	// so find the disk sector count and minus the cloudinit sectors
-	cloudInitStart := uint32(int(destDisk.Size)/table.LogicalSectorSize) - cloudInitSectors
-
-	partitions := make([]*mbr.Partition, 0)
-	for _, part := range table.Partitions {
-		if part.Type == mbr.Empty {
-			continue
-		}
-		partitions = append(partitions, part)
+	for _, part := range rawTable.GetPartitions() {
+		log.Printf("%#vn", part)
 	}
 
-	if len(partitions) >= 4 {
-		log.Fatalf("partition table already has 4 partitions, there is no room for cloud-init on disk %s", diskPath)
-	}
-
-	// add cloud-init partition
-	table.Partitions = append(partitions, &mbr.Partition{
-		Bootable: false,
-		Type:     mbr.Linux,
-		Start:    cloudInitStart,
-		Size:     cloudInitSectors,
-	})
-	cloudInitPartitionNumber = len(table.Partitions)
-
-	// write partition table to disk
-	log.Printf("Writing partition table to disk")
-	err = destDisk.Partition(table)
+	// system-boot filesystem is always the first one
+	systemBootFs, err := destDisk.GetFilesystem(1)
 	if err != nil {
-		log.Fatalf("error writing partition table to disk %s: %v", diskPath, err)
+		log.Fatalf("Error getting filesystem for partition %d: %v", 0, err)
 	}
 
-	log.Printf("Creating cloud init filesystem")
-	cloudInitFS, err := destDisk.CreateFilesystem(disk.FilesystemSpec{
-		Partition:   cloudInitPartitionNumber,
-		FSType:      filesystem.TypeFat32,
-		VolumeLabel: "config-2",
-	})
-	if err != nil {
-		log.Fatalf("error creating cloud-init filesystem on disk %s: %v", diskPath, err)
-	}
-
-	cloudInitPrefix := path.Join("/", "openstack", "latest")
-	log.Printf("Creating cloud init directory structure")
-	err = cloudInitFS.Mkdir(cloudInitPrefix)
-	if err != nil {
-		log.Fatalf("error creating cloud-init directory structure %v", err)
-	}
-
-	metadataPath := path.Join(cloudInitPrefix, "meta_data.json")
+	metadataPath := path.Join("/", "meta-data")
 	log.Printf("Opening %s", metadataPath)
-	metadataFile, err := cloudInitFS.OpenFile(metadataPath, os.O_CREATE|os.O_RDWR)
+	metadataFile, err := systemBootFs.OpenFile(metadataPath, os.O_CREATE|os.O_RDWR|os.O_TRUNC)
 	if err != nil {
 		log.Fatalf("Error opening meta data: %v", err)
 	}
@@ -199,9 +148,9 @@ func main() {
 		log.Fatalf("Error generating metadata uuid %v", err)
 	}
 	metadataContents := map[string]interface{}{
-		"uuid":        uid.String(),
-		"public_keys": metadataConfig.PublicKeys,
-		"hostname":    metadataConfig.Hostname,
+		"instance_id":    uid.String(),
+		"local-hostname": metadataConfig.Hostname,
+		"hostname":       metadataConfig.Hostname,
 	}
 	data, err := json.MarshalIndent(&metadataContents, "", "\t")
 	log.Printf("Writing metadata contents: \n%v", string(data))
@@ -210,42 +159,27 @@ func main() {
 		log.Fatalf("Error writting meta data: %v", err)
 	}
 
-	networkdataPath := path.Join(cloudInitPrefix, "network_data.json")
-	log.Printf("Opening %s", networkdataPath)
-	networkdataFile, err := cloudInitFS.OpenFile(networkdataPath, os.O_CREATE|os.O_RDWR)
+	networkConfigPath := path.Join("/", "network-config")
+	log.Printf("Opening %s", networkConfigPath)
+	networkConfigFile, err := systemBootFs.OpenFile(networkConfigPath, os.O_CREATE|os.O_RDWR|os.O_TRUNC)
 	if err != nil {
-		log.Fatalf("Error opening network data: %v", err)
-	}
-	networkdataContents := map[string]interface{}{
-		"links": []map[string]string{
-			{
-				"id":                   "eth0",
-				"ethernet_mac_address": metadataConfig.Network.MAC,
-				"type":                 "phy",
-			},
-		},
-		"networks": []map[string]interface{}{
-			{
-				"link":            "eth0",
-				"type":            "ipv4",
-				"ip_address":      metadataConfig.Network.IPAddress,
-				"netmask":         metadataConfig.Network.Netmask,
-				"gateway":         metadataConfig.Network.Gateway,
-				"dns_nameservers": metadataConfig.Network.Nameservers,
-				"dns_search":      metadataConfig.Network.Search,
-			},
-		},
-	}
-	data, err = json.MarshalIndent(&networkdataContents, "", "\t")
-	log.Printf("Writing networkdata contents: \n%v", string(data))
-	_, err = networkdataFile.Write(data)
-	if err != nil {
-		log.Fatalf("Error writting network data: %v", err)
+		log.Fatalf("Error opening network config: %v", err)
 	}
 
-	userdataPath := path.Join(cloudInitPrefix, "user_data")
+	networkConfigContents, err := yaml.Marshal(metadataConfig.NetworkConfig)
+	if err != nil {
+		log.Fatalf("Error marshalling network config: %v", err)
+	}
+
+	log.Printf("Writing network config contents: \n%v", string(networkConfigContents))
+	_, err = networkConfigFile.Write(networkConfigContents)
+	if err != nil {
+		log.Fatalf("Error writting network config: %v", err)
+	}
+
+	userdataPath := path.Join("/", "user-data")
 	log.Printf("Opening %s", userdataPath)
-	userdataFile, err := cloudInitFS.OpenFile(userdataPath, os.O_CREATE|os.O_RDWR)
+	userdataFile, err := systemBootFs.OpenFile(userdataPath, os.O_CREATE|os.O_RDWR|os.O_TRUNC)
 	if err != nil {
 		log.Fatalf("Error opening user data: %v", err)
 	}

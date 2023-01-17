@@ -2,10 +2,10 @@
 - hosts: all
   name: CLOUD INIT
   tasks:
-    - name: REMOVE FAKE CLOUD CONFIG
-      file:
-        state: absent
-        path: /etc/cloud/cloud.cfg.d/99-fake_cloud.cfg
+    # - name: REMOVE FAKE CLOUD CONFIG
+    #   file:
+    #     state: absent
+    #     path: /etc/cloud/cloud.cfg.d/99-fake_cloud.cfg
 
     - name: COPY CONFIG FILES
       copy:
