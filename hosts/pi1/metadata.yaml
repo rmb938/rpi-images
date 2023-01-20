@@ -26,6 +26,10 @@ network_config:
     veth1-provider:
       match:
         name: veth1-provider
+      accept-ra: false
+      link-local: []
   bridges:
     br0:
       interfaces: [eth0, veth0, veth1]
+      accept-ra: false
+      link-local: []

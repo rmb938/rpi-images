@@ -10,7 +10,6 @@
         group: root
         mode: "{{ item.mode }}"
       with_items:
-        - { dest: '/etc/systemd/network/br0.netdev', mode: "0644" }
         - { dest: '/etc/systemd/network/veth0.netdev', mode: "0644" }
         - { dest: '/etc/systemd/network/veth1.netdev', mode: "0644" }
 
