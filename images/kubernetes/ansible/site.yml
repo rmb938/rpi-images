@@ -244,3 +244,26 @@
         owner: root
         group: root
         mode: "0600"
+
+    # Machine IDs are used for random generation seeds
+    # so we need to wipe them so each pi can be unqiue
+    # See https://github.com/DanHam/packer-virt-sysprep/blob/master/sysprep-op-machine-id.sh
+    # This needs to happen last for some reason
+    - name: REMOVE ETC MACHINE ID
+      file:
+        path: /etc/machine-id
+        state: absent
+
+    - name: PLACE ETC MACHINE ID
+      file:
+        path: /etc/machine-id
+        owner: root
+        group: root
+        mode: "0444"
+        state: touch
+
+    # Also do the dbus one
+    - name: REMOVE DBUS MACHINE ID
+      file:
+        path: /var/lib/dbus/machine-id
+        state: absent

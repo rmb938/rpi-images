@@ -68,17 +68,6 @@
         update_cache: yes
         upgrade: yes
 
-    - name: MODIFY EFI CHECK FROM FLASH KERNEL SO WE CAN FLASH IN ARM CHROOT
-      lineinfile:
-        path: /usr/share/flash-kernel/functions
-        regexp: '^if \[ -d /sys/firmware/efi \]; then'
-        line: 'if false; then'
-
-    - name: FLASH KERNEL
-      shell: "flash-kernel"
-      environment:
-        FK_MACHINE: "Raspberry Pi 4 Model B"
-
     - name: INSTALL UTILITIES
       apt:
         name:
@@ -91,7 +80,22 @@
           - curl
           - gnupg2
           - software-properties-common
+          - linux-modules-extra-raspi
+          - zram-config
+          - zram-tools
         state: present
+
+    - name: MODIFY EFI CHECK FROM FLASH KERNEL SO WE CAN FLASH IN ARM CHROOT
+      lineinfile:
+        path: /usr/share/flash-kernel/functions
+        regexp: '^if \[ -d /sys/firmware/efi \]; then'
+        line: 'if false; then'
+
+    - name: FLASH KERNEL
+      shell: "flash-kernel"
+      environment:
+        FK_FORCE: "yes"
+        FK_MACHINE: "Raspberry Pi 4 Model B"
 
     - name: ADD TAILSCALE APT REPOSITORY KEY
       apt_key:
