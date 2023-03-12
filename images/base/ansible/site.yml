@@ -86,10 +86,9 @@
         state: present
 
     - name: MODIFY EFI CHECK FROM FLASH KERNEL SO WE CAN FLASH IN ARM CHROOT
-      lineinfile:
-        path: /usr/share/flash-kernel/functions
-        regexp: '^if \[ -d /sys/firmware/efi \]; then'
-        line: 'if false; then'
+      patch:
+        src: ./usr/share/flash-kernel/functions.patch
+        dest: /usr/share/flash-kernel/functions
 
     - name: FLASH KERNEL
       shell: "flash-kernel"

@@ -1,0 +1,11 @@
+--- /mnt/usr/share/flash-kernel/functions       2023-03-11 15:30:03.844361805 -0600
++++ /home/rbelgrave/tmp/functions       2023-03-11 15:31:49.199737715 -0600
+@@ -1019,7 +1019,7 @@
+	kfile=$(readlink -e "$kfile")
+ fi
+ 
+-if [ -d /sys/firmware/efi ]; then
++if false; then
+	# skipping when detect EFI
+	echo "System running in EFI mode, skipping."
+	exit 0

@@ -1,10 +1,8 @@
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/diskfs/go-diskfs v1.2.1-0.20220726131023-d704acd18db2 h1:Phf3KUYyOmu6l43hne836ZK6aRQBekNU9gV/1yuoAYg=
-github.com/diskfs/go-diskfs v1.2.1-0.20220726131023-d704acd18db2/go.mod h1:3pUpCAz75Q11om5RsGpVKUgXp2Z+ATw1xV500glmCP0=
-github.com/diskfs/go-diskfs v1.2.1-0.20230105182857-6a2559408c54 h1:pDfpI9uHh1Yy1zqH4nXvwCzA2ACwhYTCAc7E9mPBzfM=
-github.com/diskfs/go-diskfs v1.2.1-0.20230105182857-6a2559408c54/go.mod h1:3pUpCAz75Q11om5RsGpVKUgXp2Z+ATw1xV500glmCP0=
+github.com/diskfs/go-diskfs v1.3.0 h1:D3IVe1y7ybB5SjCO0pOmkWThL9lZEWeanp8rRa0q0sk=
+github.com/diskfs/go-diskfs v1.3.0/go.mod h1:3pUpCAz75Q11om5RsGpVKUgXp2Z+ATw1xV500glmCP0=
 github.com/frankban/quicktest v1.13.0 h1:yNZif1OkDfNoDfb9zZa9aXIpejNR4F23Wely0c+Qdqk=
 github.com/frankban/quicktest v1.13.0/go.mod h1:qLE0fzW0VuyUAJgPU19zByoIr0HtCHN/r/VLSOOIySU=
 github.com/go-test/deep v1.0.8 h1:TDsG77qcSprGbC6vTN8OuXp5g+J+b5Pcguhf7Zt61VM=
@@ -45,6 +43,8 @@ golang.org/x/sys v0.0.0-20220408201424-a24fb2fb8a0f/go.mod h1:oPkhp1MJrh7nUepCBc
 golang.org/x/sys v0.0.0-20220715151400-c0bba94af5f8/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/sys v0.4.0 h1:Zr2JFtRQNX3BCZ8YtxRE9hNJYC8J6I1MVbMg6owUp18=
 golang.org/x/sys v0.4.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
+golang.org/x/sys v0.6.0 h1:MVltZSvRTcU2ljQOhs94SXPftV6DCNnZViHeQps87pQ=
+golang.org/x/sys v0.6.0/go.mod h1:oPkhp1MJrh7nUepCBck5+mAzfO9JrbApNNgaTdGDITg=
 golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543/go.mod h1:I/5z698sn9Ka8TeJc9MKroUUfqBBauWjQqLJ2OPfmY0=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405 h1:yhCVgyC4o1eVCa2tZl7eS0r+SDo693bJlVdllGtEeKM=
 gopkg.in/check.v1 v0.0.0-20161208181325-20d25e280405/go.mod h1:Co6ibVJAznAaIkqp8huTwlJQCZ016jof/cbN4VW5Yz0=
